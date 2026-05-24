@@ -9,6 +9,7 @@ import Pagination from "@/components/Pagination/Pagination";
 import NoteList from "@/components/NoteList/NoteList";
 import Modal from "@/components/Modal/Modal";
 import NoteForm from "@/components/NoteForm/NoteForm";
+import css from "./NotesPage.module.css";
 
 import { fetchNotes } from "@/lib/api";
 
@@ -33,20 +34,24 @@ export default function NotesClient() {
     setPage(1);
   }, 500);
 
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
+  };
+
   return (
-    <div>
-      <header style={{ display: "flex", gap: "16px", alignItems: "center" }}>
+    <div className={css.app}>
+      <header className={css.toolbar}>
         <SearchBox onSearch={handleSearch} />
 
         {data && data.totalPages > 1 && (
           <Pagination
             totalPages={data.totalPages}
             currentPage={page}
-            onPageChange={setPage}
+            onPageChange={handlePageChange}
           />
         )}
 
-        <button onClick={() => setIsOpen(true)}>
+        <button className={css.button} onClick={() => setIsOpen(true)}>
           Create note +
         </button>
       </header>
@@ -54,11 +59,17 @@ export default function NotesClient() {
       {isLoading && <p>Loading...</p>}
       {isError && <p>Error loading notes</p>}
 
-      {data && <NoteList notes={data.notes} />}
+      {data && data.notes.length > 0 && (
+        <NoteList
+          notes={data.notes}
+        />
+      )}
 
       {isOpen && (
         <Modal onClose={() => setIsOpen(false)}>
-          <NoteForm onClose={() => setIsOpen(false)} />
+          <NoteForm
+            onClose={() => setIsOpen(false)}
+          />
         </Modal>
       )}
     </div>
