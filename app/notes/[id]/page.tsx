@@ -6,12 +6,12 @@ import { QueryClient } from "@tanstack/react-query";
 import NoteDetailsClient from "./NoteDetails.client";
 
 interface NoteDetailsPageProps {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 export default async function NoteDetailsPage({ params }: NoteDetailsPageProps) {
   const queryClient = new QueryClient();
-  const { id } = params;
+  const { id } = await params;
 
   // Prefetch нотатки
   await queryClient.prefetchQuery({
