@@ -1,30 +1,31 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
 import css from "./NotePreview.module.css";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
 
-interface Note {
-  title: string;
-  tag: string;
-  content: string;
-  createdAt: string;
-}
+async function fetchNoteById(id: string) {
+  const res = await fetch(
+    `https://notehub-public.goit.study/api/notes/${id}`
+  );
 
-async function fetchNoteById(id: string): Promise<Note> {
-  const res = await fetch(`/api/notes/${id}`);
+  if (!res.ok) throw new Error("Note not found");
+
   return res.json();
 }
 
 export default function NotePreview({ id }: { id: string }) {
   const router = useRouter();
-  const [note, setNote] = useState<Note | null>(null);
 
-  useEffect(() => {
-    fetchNoteById(id).then((n: Note) => setNote(n));
-  }, [id]);
+  const { data: note, isLoading } = useQuery({
+    queryKey: ["note", id],
+    queryFn: () => fetchNoteById(id),
+    enabled: !!id,
+  });
 
-  if (!note) return <div className={css.container}>Loading...</div>;
+  if (isLoading || !note) {
+    return <div className={css.container}>Loading...</div>;
+  }
 
   return (
     <div className={css.container}>

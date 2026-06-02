@@ -8,15 +8,15 @@ import { fetchNoteById } from "@/lib/api";
 import NotePreview from "@/components/NotePreview/NotePreview";
 
 interface NoteDetailsPageProps {
-  params: Promise<{
+  params: {
     id: string;
-  }>;
+  };
 }
 
 export default async function NoteDetailsPage({
   params,
 }: NoteDetailsPageProps) {
-  const { id } = await params;
+  const { id } = params;
 
   const queryClient = new QueryClient();
 
