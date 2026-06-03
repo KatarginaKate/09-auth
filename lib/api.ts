@@ -2,12 +2,11 @@ import axios from "axios";
 import type { Note, NoteTag } from "../types/note";
 
 const BASE_URL = "https://notehub-public.goit.study/api";
-
 const token = process.env.NEXT_PUBLIC_NOTEHUB_TOKEN;
 
 axios.defaults.baseURL = BASE_URL;
-
 axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+
 
 export interface FetchNotesResponse {
   notes: Note[];
@@ -18,6 +17,7 @@ interface FetchNotesParams {
   page: number;
   perPage?: number;
   search?: string;
+  tag?: string;
 }
 
 interface CreateNoteParams {
@@ -30,15 +30,17 @@ export const fetchNotes = async ({
   page,
   perPage = 12,
   search = "",
+  tag,
 }: FetchNotesParams): Promise<FetchNotesResponse> => {
-  const response = await axios.get<FetchNotesResponse>("/notes", {
-    params: {
-      page,
-      perPage,
-      search,
-    },
-  });
+  const params: FetchNotesParams = { page, perPage, search };
+  if (tag) params.tag = tag;
 
+  const response = await axios.get<FetchNotesResponse>("/notes", { params });
+  return response.data;
+};
+
+export const fetchNoteById = async (id: string): Promise<Note> => {
+  const response = await axios.get<Note>(`/notes/${id}`);
   return response.data;
 };
 
@@ -52,27 +54,10 @@ export const deleteNote = async (id: string): Promise<Note> => {
   return response.data;
 };
 
-export async function fetchNoteById(id: string): Promise<Note> {
-  const response = await axios.get<Note>(`/notes/${id}`);
+export const getNotes = async (tag?: NoteTag): Promise<FetchNotesResponse> => {
+  const params: FetchNotesParams = { page: 1, perPage: 12 };
+  if (tag) params.tag = tag;
+
+  const response = await axios.get<FetchNotesResponse>("/notes", { params });
   return response.data;
-}
-
-export const getNotes = async (tag?: string): Promise<FetchNotesResponse> => {
-  const res = await axios.get<FetchNotesResponse>("/notes", {
-    params: tag ? { tag } : {},
-  });
-  return res.data;
-};
-
-export type Category = {
-  id: string;
-  name: string;
-  description: string;
-  createdAt: string;
-  updatedAt: string;
-};
-
-export const getCategories = async () => {
-  const res = await axios<Category[]>('/categories');
-  return res.data;
 };

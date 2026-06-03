@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useDebouncedCallback } from "use-debounce";
 
-import { fetchNotes, getNotes } from "@/lib/api";
+import { fetchNotes } from "@/lib/api";
 
 import SearchBox from "@/components/SearchBox/SearchBox";
 import Pagination from "@/components/Pagination/Pagination";
@@ -19,20 +19,21 @@ export default function NotesClient({ category }: { category?: string }) {
 
   const isFiltered = Boolean(category);
 
-  const { data, isLoading, isError } = useQuery({
-    queryKey: isFiltered
-      ? ["notes", "filter", category]
-      : ["notes", "list", page, search],
+  const { data } = useQuery({
+  queryKey: ["notes", page, search, category || ""],
 
-    queryFn: () =>
-      isFiltered
-        ? getNotes(category)
-        : fetchNotes({
-            page,
-            perPage: 12,
-            search,
-          }),
+  queryFn: () =>
+    fetchNotes({
+      page,
+      perPage: 12,
+      search,
+      tag: category || undefined,
+    }),
 
+  placeholderData: (prev) => prev,
+});
+  const { isLoading, isError } = useQuery({
+  queryKey: ["notes", page, search, category || ""],
     placeholderData: (prev) => prev,
   });
 
@@ -75,11 +76,7 @@ export default function NotesClient({ category }: { category?: string }) {
 
       {notes.length > 0 && <NoteList notes={notes} />}
 
-      {isOpen && (
-        
-          <NoteForm onClose={() => setIsOpen(false)} />
-        
-      )}
+      {isOpen && <NoteForm onClose={() => setIsOpen(false)} />}
     </div>
   );
 }
