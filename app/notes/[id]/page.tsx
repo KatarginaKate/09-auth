@@ -5,7 +5,7 @@ import {
 } from "@tanstack/react-query";
 
 import { fetchNoteById } from "@/lib/api";
-import NotePreview from "@/app/@modal/NotePreview/NotePreview";
+import NotePreview from "@/app/@modal/(.)notes/[id]/NotePreview";
 
 interface NoteDetailsPageProps {
   params: {
