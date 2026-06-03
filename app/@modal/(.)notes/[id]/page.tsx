@@ -8,9 +8,9 @@ import {
 
 
 interface NoteModalPageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 export default async function NoteModalPage({ params }: NoteModalPageProps) {
