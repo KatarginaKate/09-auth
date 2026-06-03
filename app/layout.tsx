@@ -31,11 +31,12 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
       <body>
-        {modal}
+        
         <Providers>
           <Header />
           <main>
             {children}
+            {modal}
             <div id="modal-root"></div>
           </main>
           <Footer />
