@@ -3,11 +3,10 @@
 import { useQuery } from "@tanstack/react-query";
 import css from "./NotePreview.module.css";
 import { useRouter } from "next/navigation";
+import Modal from "../Modal/Modal";
 
 async function fetchNoteById(id: string) {
-  const res = await fetch(
-    `https://notehub-public.goit.study/api/notes/${id}`
-  );
+  const res = await fetch(`https://notehub-public.goit.study/api/notes/${id}`);
 
   if (!res.ok) throw new Error("Note not found");
 
@@ -28,23 +27,25 @@ export default function NotePreview({ id }: { id: string }) {
   }
 
   return (
-    <div className={css.container}>
-      <button className={css.backBtn} onClick={() => router.back()}>
-        ← Back
-      </button>
+    <Modal>
+      <div className={css.container}>
+        <button className={css.backBtn} onClick={() => router.back()}>
+          ← Back
+        </button>
 
-      <div className={css.item}>
-        <div className={css.header}>
-          <h2>{note.title}</h2>
-          <span className={css.tag}>{note.tag}</span>
+        <div className={css.item}>
+          <div className={css.header}>
+            <h2>{note.title}</h2>
+            <span className={css.tag}>{note.tag}</span>
+          </div>
+
+          <p className={css.content}>{note.content}</p>
+
+          <p className={css.date}>
+            {new Date(note.createdAt).toLocaleDateString()}
+          </p>
         </div>
-
-        <p className={css.content}>{note.content}</p>
-
-        <p className={css.date}>
-          {new Date(note.createdAt).toLocaleDateString()}
-        </p>
       </div>
-    </div>
+    </Modal>
   );
 }
