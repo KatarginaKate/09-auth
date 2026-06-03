@@ -4,14 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import css from "./NotePreview.module.css";
 import { useRouter } from "next/navigation";
 import Modal from "@/components/Modal/Modal";
-
-async function fetchNoteById(id: string) {
-  const res = await fetch(`https://notehub-public.goit.study/api/notes/${id}`);
-
-  if (!res.ok) throw new Error("Note not found");
-
-  return res.json();
-}
+import {fetchNoteById} from "@/lib/api";
 
 export default function NotePreview({ id }: { id: string }) {
   const router = useRouter();
