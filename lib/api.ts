@@ -2,6 +2,7 @@ import axios from "axios";
 import type { Note, NoteTag } from "../types/note";
 
 const BASE_URL = "https://notehub-public.goit.study/api";
+
 const token = process.env.NEXT_PUBLIC_NOTEHUB_TOKEN;
 
 axios.defaults.baseURL = BASE_URL;
@@ -16,13 +17,13 @@ interface FetchNotesParams {
   page: number;
   perPage?: number;
   search?: string;
-  tag?: string;
+  tag?: NoteTag;
 }
 
 interface CreateNoteParams {
   title: string;
   content: string;
-  tag: string; // 
+  tag: NoteTag;
 }
 
 export const fetchNotes = async ({
@@ -30,58 +31,61 @@ export const fetchNotes = async ({
   perPage = 12,
   search = "",
   tag,
-}: FetchNotesParams): Promise<FetchNotesResponse> => {
-  const params: Record<string, string | number> = {
-    page,
-    perPage,
-    search,
-  };
-
-  if (tag && tag !== "all") {
-    params.tag = tag;
-  }
-
-  const response = await axios.get("/notes", { params });
-
-  return {
-    notes: response.data.notes ?? [],
-    totalPages: response.data.totalPages ?? 1,
-  };
-};
-
-// GET BY ID
-export const fetchNoteById = async (id: string): Promise<Note> => {
-  const response = await axios.get(`/notes/${id}`);
+}: FetchNotesParams) => {
+  const response = await axios.get<FetchNotesResponse>("/notes", {
+    params: {
+      page,
+      perPage,
+      search,
+      ...(tag ? { tag } : {}),
+    },
+  });
   return response.data;
 };
 
-// CREATE
-export const createNote = async (note: CreateNoteParams): Promise<Note> => {
-  const response = await axios.post("/notes", note);
+export const createNote = async (
+  note: CreateNoteParams
+): Promise<Note> => {
+  const response = await axios.post<Note>(
+    "/notes",
+    note
+  );
+
   return response.data;
 };
 
-// DELETE
-export const deleteNote = async (id: string): Promise<Note> => {
-  const response = await axios.delete(`/notes/${id}`);
+export const deleteNote = async (
+  id: string
+): Promise<Note> => {
+  const response = await axios.delete<Note>(
+    `/notes/${id}`
+  );
+
   return response.data;
 };
 
-// SIMPLE GET FOR SIDEBAR
-export const getNotes = async (tag?: NoteTag | "all"): Promise<FetchNotesResponse> => {
-  const params: Record<string, string | number> = {
-    page: 1,
-    perPage: 12,
-  };
+export const fetchNoteById = async (
+  id: string
+): Promise<Note> => {
+  const response = await axios.get<Note>(
+    `/notes/${id}`
+  );
 
-  if (tag && tag !== "all") {
-    params.tag = tag;
-  }
+  return response.data;
+};
 
-  const response = await axios.get("/notes", { params });
+export type Category = {
+  id: string;
+  name: string;
+  description: string;
+  createdAt: string;
+  updatedAt: string;
+};
 
-  return {
-    notes: response.data.notes ?? [],
-    totalPages: response.data.totalPages ?? 1,
-  };
+export const getCategories = async (): Promise<Category[]> => {
+  const response = await axios.get<Category[]>(
+    "/categories"
+  );
+
+  return response.data;
 };

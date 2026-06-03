@@ -12,7 +12,8 @@ export default async function NotesPage({
   params: Promise<{ slug: string[] }>;
 }) {
   const { slug } = await params;
-  const tag = slug[0];
+  const raw = slug[0];
+  const tag = raw === "all" ? undefined : (raw as Parameters<typeof fetchNotes>[0]["tag"]);
 
   const queryClient = new QueryClient();
 
@@ -23,7 +24,7 @@ export default async function NotesPage({
         page: 1,
         perPage: 12,
         search: "",
-        ...(tag === "all" ? { tag: undefined } : { tag }),
+        ...(tag ? { tag } : {}),
       }),
   });
 
@@ -31,7 +32,7 @@ export default async function NotesPage({
 
   return (
     <HydrationBoundary state={dehydratedState}>
-      <NotesClient category={tag} />
+      <NotesClient category={tag ?? "all"} />
     </HydrationBoundary>
   );
 }

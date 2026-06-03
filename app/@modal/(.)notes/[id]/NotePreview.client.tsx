@@ -13,6 +13,7 @@ export default function NotePreview({ id }: { id: string }) {
     queryKey: ["note", id],
     queryFn: () => fetchNoteById(id),
     enabled: !!id,
+    refetchOnMount: false,
   });
 
   if (isLoading || !note) {
