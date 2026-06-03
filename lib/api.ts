@@ -7,7 +7,6 @@ const token = process.env.NEXT_PUBLIC_NOTEHUB_TOKEN;
 axios.defaults.baseURL = BASE_URL;
 axios.defaults.headers.common.Authorization = `Bearer ${token}`;
 
-// Фактичний формат відповіді бекенду
 export interface FetchNotesResponse {
   notes: Note[];
   totalPages: number;
@@ -23,10 +22,9 @@ interface FetchNotesParams {
 interface CreateNoteParams {
   title: string;
   content: string;
-  tag: string; // ← універсально, без TS-помилок
+  tag: string; // 
 }
 
-// UNIVERSAL FETCH
 export const fetchNotes = async ({
   page,
   perPage = 12,
@@ -45,7 +43,6 @@ export const fetchNotes = async ({
 
   const response = await axios.get("/notes", { params });
 
-  // Гарантуємо правильний формат
   return {
     notes: response.data.notes ?? [],
     totalPages: response.data.totalPages ?? 1,
