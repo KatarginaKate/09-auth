@@ -3,15 +3,14 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useDebouncedCallback } from "use-debounce";
+import Link from "next/link";
 
 import { fetchNotes } from "@/lib/api";
 import type { NoteTag } from "@/types/note";
 
-import Modal from "@/components/Modal/Modal";
 import SearchBox from "@/components/SearchBox/SearchBox";
 import Pagination from "@/components/Pagination/Pagination";
 import NoteList from "@/components/NoteList/NoteList";
-import NoteForm from "@/components/NoteForm/NoteForm";
 
 import css from "./NotesPage.module.css";
 
@@ -22,7 +21,6 @@ interface NotesClientProps {
 export default function NotesClient({ category }: NotesClientProps) {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
-  const [isOpen, setIsOpen] = useState(false);
 
   const tag: NoteTag | undefined =
     category && category !== "all" ? (category as NoteTag) : undefined;
@@ -65,19 +63,12 @@ export default function NotesClient({ category }: NotesClientProps) {
           />
         )}
 
-        <button className={css.button} onClick={() => setIsOpen(true)}>
+        <Link href="/notes/action/create" className={css.button}>
           Create note +
-        </button>
+        </Link>
       </header>
 
       {notes.length > 0 && <NoteList notes={notes} />}
-
-      {/* ✅ ВИМОГА: Modal + children + onClose */}
-      {isOpen && (
-        <Modal onClose={() => setIsOpen(false)}>
-          <NoteForm onClose={() => setIsOpen(false)} />
-        </Modal>
-      )}
     </div>
   );
 }
