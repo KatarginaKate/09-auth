@@ -16,9 +16,9 @@ interface NoteDetailsPageProps {
 import type { Metadata } from "next";
 
 export async function generateMetadata(
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ): Promise<Metadata> {
-  const { id } = params;
+  const { id } = await params;
 
   // Отримуємо дані нотатки
   const note = await fetchNoteById(id);
