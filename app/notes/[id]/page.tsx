@@ -16,7 +16,7 @@ interface NoteDetailsPageProps {
 import type { Metadata } from "next";
 
 export async function generateMetadata(
-  { params }: { params: Promise<{ id: string }> }
+  params: Promise<{ id: string }> 
 ): Promise<Metadata> {
   const { id } = await params;
 
@@ -35,7 +35,7 @@ export async function generateMetadata(
     openGraph: {
       title,
       description,
-      url: `https://3000/notes/${id}`,
+      url: `https://vercel.com/katarginakates-projects/08-zustand/${id}`,
       images: [
         {
           url: "https://ac.goit.global/fullstack/react/notehub-og-meta.jpg",
@@ -52,7 +52,7 @@ export async function generateMetadata(
 export default async function NoteDetailsPage({
   params,
 }: NoteDetailsPageProps) {
-  const { id } = params;
+  const { id } = await params;
 
   const queryClient = new QueryClient();
 
