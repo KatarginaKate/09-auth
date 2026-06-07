@@ -16,11 +16,11 @@ export const metadata: Metadata = {
   title: "NoteHub — Smart Notes Manager",
   description:
     "NoteHub — це сучасний застосунок для створення, редагування та організації особистих нотаток з підтримкою пошуку та модальних вікон.",
-
   openGraph: {
     title: "NoteHub — Smart Notes Manager",
     description:
       "NoteHub — швидкий і зручний застосунок для керування нотатками. Створюйте, редагуйте та організовуйте свої записи легко.",
+      url: "https://vercel.com/katarginakates-projects/08-zustand",
     images: [
       {
         url: "https://ac.goit.global/fullstack/react/notehub-og-meta.jpg",

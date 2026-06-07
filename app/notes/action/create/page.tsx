@@ -12,7 +12,7 @@ export const metadata: Metadata = {
     title: "Create a new note | NoteHub",
     description:
       "Створіть нову нотатку у NoteHub. Заповніть форму та додайте свій запис до списку нотаток.",
-    url: "https://3000/notes/action/create",
+    url: "http://localhost:3000/notes/action/create",
     images: [
       {
         url: "https://ac.goit.global/fullstack/react/notehub-og-meta.jpg",
@@ -26,10 +26,6 @@ export const metadata: Metadata = {
 
 
 export default function CreateNote() {
-  const handleClose = () => {
-
-  };
-
   return (
     <main className={css.main}>
       <div className={css.container}>

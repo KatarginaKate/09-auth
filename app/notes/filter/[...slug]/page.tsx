@@ -9,10 +9,11 @@ import NotesClient from "./Notes.client";
 import type { Metadata } from "next";
 
 export async function generateMetadata(
-  { params }: { params: { slug: string[] } }
+  { params }: { params: Promise<{ slug?: string[] }> }
 ): Promise<Metadata> {
-  const tag = params.slug?.[0] ?? "all";
+  const { slug } = await params;
 
+  const tag = slug?.[0] ?? "all";
   const readableTag = tag === "all" ? "Усі нотатки" : `Фільтр: ${tag}`;
 
   const title = `${readableTag} | NoteHub`;
