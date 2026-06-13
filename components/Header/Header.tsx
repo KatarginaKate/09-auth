@@ -15,6 +15,16 @@ const Header = () => {
           <li>
             <Link href="/notes/filter/all">Notes</Link>
           </li>
+           <li>
+            <Link href="/profile">Profile</Link>
+          </li>
+          {/* Нові посилання */}
+          <li>
+            <Link href="/sign-in">Login</Link>
+          </li>
+          <li>
+            <Link href="/sign-up">Register</Link>
+          </li>
         </ul>
       </nav>
     </header>
