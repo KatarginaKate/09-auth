@@ -1,8 +1,6 @@
-import axios from 'axios';
-
-const baseURL = `${process.env.NEXT_PUBLIC_API_URL}/api`;
+import axios from "axios";
 
 export const api = axios.create({
-  baseURL: "https://09-auth-five-omega.vercel.app/api",
+  baseURL: "https://notehub-api.goit.study",
   withCredentials: true,
 });

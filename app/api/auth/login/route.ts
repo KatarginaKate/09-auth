@@ -1,49 +1,44 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { api } from '../../api';
-import { cookies } from 'next/headers';
-import { parse } from 'cookie';
-import { isAxiosError } from 'axios';
-
-// Local fallback for logging error responses to avoid missing import
-function logErrorResponse(data: any) {
-  // keep minimal logging; adapt as needed
-  console.error('Error response:', data);
-}
+import { NextRequest, NextResponse } from "next/server";
+import { api } from "../../api";
+import { cookies } from "next/headers";
+import { isAxiosError } from "axios";
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const apiRes = await api.post('auth/login', body);
+    const apiRes = await api.post("/auth/login", body);
 
     const cookieStore = await cookies();
-    const setCookie = apiRes.headers['set-cookie'];
+    const setCookies = apiRes.headers["set-cookie"];
 
-    if (setCookie) {
-      const cookieArray = Array.isArray(setCookie) ? setCookie : [setCookie];
-      for (const cookieStr of cookieArray) {
-        const parsed = parse(cookieStr);
-        const options = {
-          expires: parsed.Expires ? new Date(parsed.Expires) : undefined,
-          path: parsed.Path,
-          maxAge: Number(parsed['Max-Age']),
-        };
-        if (parsed.accessToken) cookieStore.set('accessToken', parsed.accessToken, options);
-        if (parsed.refreshToken) cookieStore.set('refreshToken', parsed.refreshToken, options);
+    if (setCookies) {
+      for (const raw of setCookies) {
+        const [cookiePair] = raw.split(";"); // "accessToken=..."
+        const [name, value] = cookiePair.split("=");
+
+        cookieStore.set({
+          name,
+          value,
+          httpOnly: true,
+          secure: true,
+          sameSite: "none",
+          path: "/",
+        });
       }
-
-      return NextResponse.json(apiRes.data, { status: apiRes.status });
     }
 
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return NextResponse.json(apiRes.data, { status: apiRes.status });
   } catch (error) {
     if (isAxiosError(error)) {
-      logErrorResponse(error.response?.data);
       return NextResponse.json(
         { error: error.message, response: error.response?.data },
-        { status: error.status }
+        { status: error.response?.status ?? 500 }
       );
     }
-    logErrorResponse({ message: (error as Error).message });
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
+    );
   }
 }

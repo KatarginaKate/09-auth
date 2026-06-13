@@ -7,15 +7,18 @@ import type { Note } from "@/types/note";
 // HELPERS
 // -----------------------------
 
-async function getAuthHeaders() {
+export async function getAuthHeaders() {
   const cookieStore = await cookies();
-  const cookieHeader = cookieStore.toString();
+
+  const cookieHeader = cookieStore
+    .getAll()
+    .map(({ name, value }) => `${name}=${value}`)
+    .join("; ");
 
   return {
     headers: {
       Cookie: cookieHeader,
     },
-    withCredentials: true,
   };
 }
 
@@ -51,18 +54,17 @@ export const fetchNoteById = async (id: string): Promise<Note> => {
 // AUTH
 // -----------------------------
 
+
 export const getMe = async () => {
   const authHeaders = await getAuthHeaders();
-
-  const response = await api.get("/auth/me", authHeaders);
-
+  const response = await api.get("/users/me", authHeaders);
   return response.data;
 };
 
 export const checkSession = async () => {
   const authHeaders = await getAuthHeaders();
 
-  const response = await api.get("/auth/session", authHeaders);
+  const response = await api.get("/users/session", authHeaders);
 
   return response.data;
 };
