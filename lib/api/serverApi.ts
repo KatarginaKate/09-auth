@@ -4,21 +4,20 @@ import { api } from "./api";
 import type { Note } from "@/types/note";
 
 // -----------------------------
-// HELPERS
+// AUTH HELPERS
 // -----------------------------
 
 export async function getAuthHeaders() {
   const cookieStore = await cookies();
 
-  const cookieHeader = cookieStore
-    .getAll()
-    .map(({ name, value }) => `${name}=${value}`)
-    .join("; ");
+  const token = cookieStore.get("accessToken")?.value;
+
+  if (!token) {
+    throw new Error("No access token found in cookies");
+  }
 
   return {
-    headers: {
-      Cookie: cookieHeader,
-    },
+    Authorization: `Bearer ${token}`,
   };
 }
 
@@ -32,39 +31,46 @@ export const fetchNotes = async (params: {
   search?: string;
   tag?: string;
 }) => {
-  const authHeaders = await getAuthHeaders();
+  const headers = await getAuthHeaders();
 
-  const response = await api.get("/notes", {
-    ...authHeaders,
+  const { data } = await api.get("/notes", {
+    headers,
     params,
   });
 
-  return response.data;
+  return data;
 };
 
 export const fetchNoteById = async (id: string): Promise<Note> => {
-  const authHeaders = await getAuthHeaders();
+  const headers = await getAuthHeaders();
 
-  const response = await api.get(`/notes/${id}`, authHeaders);
+  const { data } = await api.get(`/notes/${id}`, {
+    headers,
+  });
 
-  return response.data;
+  return data;
 };
 
 // -----------------------------
-// AUTH
+// USER
 // -----------------------------
 
-
 export const getMe = async () => {
-  const authHeaders = await getAuthHeaders();
-  const response = await api.get("/users/me", authHeaders);
-  return response.data;
+  const headers = await getAuthHeaders();
+
+  const { data } = await api.get("/users/me", {
+    headers,
+  });
+
+  return data;
 };
 
 export const checkSession = async () => {
-  const authHeaders = await getAuthHeaders();
+  const headers = await getAuthHeaders();
 
-  const response = await api.get("/users/session", authHeaders);
+  const { data } = await api.get("/users/me", {
+    headers,
+  });
 
-  return response.data;
+  return data;
 };

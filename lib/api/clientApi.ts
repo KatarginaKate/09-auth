@@ -2,12 +2,9 @@
 import axios from "axios";
 import type { Note, NoteTag } from "@/types/note";
 
-// -----------------------------
-// CLIENT API (Browser → Next.js API routes)
-// -----------------------------
-
 export const clientApi = axios.create({
-  baseURL: "/api", // ❗ тільки локальні API routes
+  baseURL: "/api",
+  withCredentials: true, // 🔥 КЛЮЧОВЕ для 401 fix
 });
 
 // -----------------------------
@@ -45,23 +42,23 @@ interface UpdateMeParams {
 export const fetchNotes = async (
   params: FetchNotesParams
 ): Promise<FetchNotesResponse> => {
-  const response = await clientApi.get<FetchNotesResponse>("/notes", { params });
-  return response.data;
+  const { data } = await clientApi.get("/notes", { params });
+  return data;
 };
 
 export const fetchNoteById = async (id: string): Promise<Note> => {
-  const response = await clientApi.get<Note>(`/notes/${id}`);
-  return response.data;
+  const { data } = await clientApi.get(`/notes/${id}`);
+  return data;
 };
 
 export const createNote = async (data: CreateNoteParams): Promise<Note> => {
-  const response = await clientApi.post<Note>("/notes", data);
-  return response.data;
+  const res = await clientApi.post("/notes", data);
+  return res.data;
 };
 
 export const deleteNote = async (id: string): Promise<Note> => {
-  const response = await clientApi.delete<Note>(`/notes/${id}`);
-  return response.data;
+  const res = await clientApi.delete(`/notes/${id}`);
+  return res.data;
 };
 
 // -----------------------------
@@ -73,28 +70,28 @@ export const register = async (data: {
   email: string;
   password: string;
 }) => {
-  const response = await clientApi.post("/auth/register", data);
-  return response.data;
+  const res = await clientApi.post("/auth/register", data);
+  return res.data;
 };
 
 export const login = async (data: { email: string; password: string }) => {
-  const response = await clientApi.post("/auth/login", data);
-  return response.data;
+  const res = await clientApi.post("/auth/login", data);
+  return res.data;
 };
 
 export const logout = async () => {
-  const response = await clientApi.post("/auth/logout");
-  return response.data;
+  const res = await clientApi.post("/auth/logout");
+  return res.data;
 };
 
 export const checkSession = async () => {
-  const response = await clientApi.get("/auth/session");
-  return response.data;
+  const res = await clientApi.get("/auth/session");
+  return res.data;
 };
 
 export const getMe = async () => {
-  const response = await clientApi.get("/users/me");
-  return response.data;
+  const res = await clientApi.get("/users/me");
+  return res.data;
 };
 
 export const updateMe = async (data: UpdateMeParams) => {
@@ -104,12 +101,7 @@ export const updateMe = async (data: UpdateMeParams) => {
   if (data.email) formData.append("email", data.email);
   if (data.avatar) formData.append("avatar", data.avatar);
 
-  const response = await clientApi.patch("/auth/me", formData, {
-    headers: { "Content-Type": "multipart/form-data" },
-  });
-
-  return response.data;
+  const res = await clientApi.patch("/auth/me", formData);
+  return res.data;
 };
-
-
 
