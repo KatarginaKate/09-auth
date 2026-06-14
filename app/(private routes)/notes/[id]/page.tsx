@@ -4,26 +4,34 @@ import {
   QueryClient,
 } from "@tanstack/react-query";
 
+import type { Metadata } from "next";
+
 import { fetchNoteById } from "@/lib/api/serverApi";
 import NotePreview from "@/app/@modal/(.)notes/[id]/NotePreview.client";
 
+// -----------------------------
+// TYPES (ВАЖЛИВО: Promise)
+// -----------------------------
+
 interface NoteDetailsPageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
-import type { Metadata } from "next";
+// -----------------------------
+// METADATA
+// -----------------------------
 
 export async function generateMetadata(
-  params: Promise<{ id: string }> 
+  { params }: NoteDetailsPageProps
 ): Promise<Metadata> {
   const { id } = await params;
 
-  // Отримуємо дані нотатки
   const note = await fetchNoteById(id);
 
   const title = `${note.title} | NoteHub`;
+
   const description = note.content
     ? `${note.content.slice(0, 120)}…`
     : "Деталі вибраної нотатки.";
@@ -31,7 +39,6 @@ export async function generateMetadata(
   return {
     title,
     description,
-
     openGraph: {
       title,
       description,
@@ -48,6 +55,9 @@ export async function generateMetadata(
   };
 }
 
+// -----------------------------
+// PAGE
+// -----------------------------
 
 export default async function NoteDetailsPage({
   params,
@@ -63,9 +73,7 @@ export default async function NoteDetailsPage({
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      
-        <NotePreview id={id} />
-      
+      <NotePreview id={id} />
     </HydrationBoundary>
   );
 }

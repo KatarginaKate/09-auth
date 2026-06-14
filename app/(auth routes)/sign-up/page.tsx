@@ -8,7 +8,8 @@ import css from "./SignUpPage.module.css";
 
 export default function SignUpPage() {
   const router = useRouter();
-  const { setUser } = useAuthStore();
+  const setUser = useAuthStore((state) => state.setUser);
+
   const [error, setError] = useState("");
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -16,19 +17,28 @@ export default function SignUpPage() {
     setError("");
 
     const formData = new FormData(e.currentTarget);
-    const name = formData.get("name")?.toString() || "";
-    const email = formData.get("email")?.toString() || "";
-    const password = formData.get("password")?.toString() || "";
+
+    const name = formData.get("name")?.toString() ?? "";
+    const email = formData.get("email")?.toString() ?? "";
+    const password = formData.get("password")?.toString() ?? "";
 
     try {
-      const user = await register({ name, email, password });
+      const user = await register({ email, password });
 
-      // 🔥 Зберігаємо користувача в Zustand
       setUser(user);
 
       router.push("/profile");
-    } catch (err: any) {
-      setError(err?.response?.data?.message || "Registration failed");
+    } catch (err: unknown) {
+      const message =
+        typeof err === "object" &&
+        err !== null &&
+        "response" in err
+          ? (err as {
+              response?: { data?: { message?: string } };
+            }).response?.data?.message
+          : null;
+
+      setError(message || "Registration failed");
     }
   };
 
@@ -37,21 +47,47 @@ export default function SignUpPage() {
       <h1 className={css.formTitle}>Sign up</h1>
 
       <form className={css.form} onSubmit={handleSubmit}>
+        {/* ✅ ДОДАНО name поле */}
+        <div className={css.formGroup}>
+          <label htmlFor="name">Name</label>
+          <input
+            id="name"
+            type="text"
+            name="name"
+            className={css.input}
+            required
+          />
+        </div>
+
         <div className={css.formGroup}>
           <label htmlFor="email">Email</label>
-          <input id="email" type="email" name="email" className={css.input} required />
+          <input
+            id="email"
+            type="email"
+            name="email"
+            className={css.input}
+            required
+          />
         </div>
 
         <div className={css.formGroup}>
           <label htmlFor="password">Password</label>
-          <input id="password" type="password" name="password" className={css.input} required />
+          <input
+            id="password"
+            type="password"
+            name="password"
+            className={css.input}
+            required
+          />
         </div>
 
         <div className={css.actions}>
-          <button type="submit" className={css.submitButton}>Register</button>
+          <button type="submit" className={css.submitButton}>
+            Register
+          </button>
         </div>
 
-        <p className={css.error}>{error}</p>
+        {error && <p className={css.error}>{error}</p>}
       </form>
     </main>
   );

@@ -1,10 +1,9 @@
-// lib/api/clientApi.ts
 import axios from "axios";
 import type { Note, NoteTag } from "@/types/note";
 
 export const clientApi = axios.create({
   baseURL: "/api",
-  withCredentials: true, // 🔥 КЛЮЧОВЕ для 401 fix
+  withCredentials: true,
 });
 
 // -----------------------------
@@ -30,9 +29,7 @@ interface CreateNoteParams {
 }
 
 interface UpdateMeParams {
-  name?: string;
-  email?: string;
-  avatar?: File | null;
+  username?: string;
 }
 
 // -----------------------------
@@ -51,7 +48,9 @@ export const fetchNoteById = async (id: string): Promise<Note> => {
   return data;
 };
 
-export const createNote = async (data: CreateNoteParams): Promise<Note> => {
+export const createNote = async (
+  data: CreateNoteParams
+): Promise<Note> => {
   const res = await clientApi.post("/notes", data);
   return res.data;
 };
@@ -65,8 +64,8 @@ export const deleteNote = async (id: string): Promise<Note> => {
 // AUTH
 // -----------------------------
 
+// ❌ backend НЕ очікує name
 export const register = async (data: {
-  name: string;
   email: string;
   password: string;
 }) => {
@@ -74,7 +73,10 @@ export const register = async (data: {
   return res.data;
 };
 
-export const login = async (data: { email: string; password: string }) => {
+export const login = async (data: {
+  email: string;
+  password: string;
+}) => {
   const res = await clientApi.post("/auth/login", data);
   return res.data;
 };
@@ -94,14 +96,19 @@ export const getMe = async () => {
   return res.data;
 };
 
+// -----------------------------
+// USER
+// -----------------------------
+
+// ❗ тільки username (як в вимогах)
 export const updateMe = async (data: UpdateMeParams) => {
   const formData = new FormData();
 
-  if (data.name) formData.append("name", data.name);
-  if (data.email) formData.append("email", data.email);
-  if (data.avatar) formData.append("avatar", data.avatar);
+  if (data.username) {
+    formData.append("username", data.username);
+  }
 
-  const res = await clientApi.patch("/auth/me", formData);
+  const res = await clientApi.patch("/users/me", formData);
+
   return res.data;
 };
-
