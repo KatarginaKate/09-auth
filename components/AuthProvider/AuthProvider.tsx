@@ -13,7 +13,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
       try {
         const session = await checkSession();
 
-        if (!session?.ok) {
+        if (!session) {
           clearIsAuthenticated();
           return;
         }
