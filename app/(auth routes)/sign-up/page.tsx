@@ -17,15 +17,17 @@ export default function SignUpPage() {
     setError("");
 
     const formData = new FormData(e.currentTarget);
-
-    const name = formData.get("name")?.toString() ?? "";
     const email = formData.get("email")?.toString() ?? "";
     const password = formData.get("password")?.toString() ?? "";
 
     try {
-      const user = await register({ email, password });
+      await register({ email, password });
 
-      setUser(user);
+      setUser({
+        email: email,
+        username: email.split("@")[0],
+        avatar: "",
+      });
 
       router.push("/profile");
     } catch (err: unknown) {
@@ -47,18 +49,6 @@ export default function SignUpPage() {
       <h1 className={css.formTitle}>Sign up</h1>
 
       <form className={css.form} onSubmit={handleSubmit}>
-        {/* ✅ ДОДАНО name поле */}
-        <div className={css.formGroup}>
-          <label htmlFor="name">Name</label>
-          <input
-            id="name"
-            type="text"
-            name="name"
-            className={css.input}
-            required
-          />
-        </div>
-
         <div className={css.formGroup}>
           <label htmlFor="email">Email</label>
           <input

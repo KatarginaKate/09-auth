@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { login } from "@/lib/api/clientApi";
+import { login, getMe } from "@/lib/api/clientApi";
 import { useAuthStore } from "@/lib/store/authStore";
 import css from "./SignInPage.module.css";
 
@@ -17,36 +17,31 @@ export default function SignInPage() {
     setError("");
 
     const formData = new FormData(e.currentTarget);
-  
 
     const email = formData.get("email")?.toString() || "";
     const password = formData.get("password")?.toString() || "";
 
     try {
-      const res = await login({ email, password });
+      // 1) Логін
+      await login({ email, password });
 
-      const user = res?.user ?? res;
+      // 2) Отримуємо дані користувача
+      const user = await getMe();
 
+      // 3) Зберігаємо у Zustand
       setUser(user);
 
+      // 4) Редірект
       router.push("/profile");
     } catch (err: unknown) {
-      const message = (() => {
-        if (
-          typeof err === "object" &&
-          err !== null &&
-          "response" in err &&
-          typeof (err as { response?: { data?: { message?: string } } })
-            .response?.data?.message === "string"
-        ) {
-          return (
-            (err as { response?: { data?: { message?: string } } }).response?.data
-              ?.message
-          );
-        }
-
-        return null;
-      })();
+      const message =
+        typeof err === "object" &&
+        err !== null &&
+        "response" in err
+          ? (err as {
+              response?: { data?: { message?: string } };
+            }).response?.data?.message
+          : null;
 
       setError(message || "Login failed");
     }

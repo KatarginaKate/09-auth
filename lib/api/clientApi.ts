@@ -1,5 +1,6 @@
 import axios from "axios";
 import type { Note, NoteTag } from "@/types/note";
+import type { User } from "@/types/user";
 
 export const clientApi = axios.create({
   baseURL: "/api",
@@ -28,6 +29,22 @@ interface CreateNoteParams {
   tag: NoteTag;
 }
 
+interface RegisterResponse {
+  message: string;
+}
+
+interface LoginResponse {
+  message: string;
+}
+
+interface LogoutResponse {
+  message: string;
+}
+
+interface SessionResponse {
+  isLoggedIn: boolean;
+}
+
 interface UpdateMeParams {
   username?: string;
 }
@@ -48,9 +65,7 @@ export const fetchNoteById = async (id: string): Promise<Note> => {
   return data;
 };
 
-export const createNote = async (
-  data: CreateNoteParams
-): Promise<Note> => {
+export const createNote = async (data: CreateNoteParams): Promise<Note> => {
   const res = await clientApi.post("/notes", data);
   return res.data;
 };
@@ -64,11 +79,10 @@ export const deleteNote = async (id: string): Promise<Note> => {
 // AUTH
 // -----------------------------
 
-// ❌ backend НЕ очікує name
 export const register = async (data: {
   email: string;
   password: string;
-}) => {
+}): Promise<RegisterResponse> => {
   const res = await clientApi.post("/auth/register", data);
   return res.data;
 };
@@ -76,22 +90,22 @@ export const register = async (data: {
 export const login = async (data: {
   email: string;
   password: string;
-}) => {
+}): Promise<LoginResponse> => {
   const res = await clientApi.post("/auth/login", data);
   return res.data;
 };
 
-export const logout = async () => {
+export const logout = async (): Promise<LogoutResponse> => {
   const res = await clientApi.post("/auth/logout");
   return res.data;
 };
 
-export const checkSession = async () => {
+export const checkSession = async (): Promise<SessionResponse> => {
   const res = await clientApi.get("/auth/session");
   return res.data;
 };
 
-export const getMe = async () => {
+export const getMe = async (): Promise<User> => {
   const res = await clientApi.get("/users/me");
   return res.data;
 };
@@ -100,15 +114,7 @@ export const getMe = async () => {
 // USER
 // -----------------------------
 
-// ❗ тільки username (як в вимогах)
-export const updateMe = async (data: UpdateMeParams) => {
-  const formData = new FormData();
-
-  if (data.username) {
-    formData.append("username", data.username);
-  }
-
-  const res = await clientApi.patch("/users/me", formData);
-
+export const updateMe = async (data: UpdateMeParams): Promise<User> => {
+  const res = await clientApi.patch("/users/me", data); // JSON, не FormData
   return res.data;
 };

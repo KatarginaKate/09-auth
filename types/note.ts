@@ -14,8 +14,3 @@ export interface Note {
   updatedAt: string;
 }
 
-export interface User {
-  email: string;
-  username: string;
-  avatar: string;
-}

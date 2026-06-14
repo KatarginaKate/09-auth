@@ -9,7 +9,7 @@ import { useAuthStore } from "@/lib/store/authStore";
 import { updateMe } from "@/lib/api/clientApi";
 
 export default function EditProfilePage() {
-    const router = useRouter();
+  const router = useRouter();
 
   const user = useAuthStore((state) => state.user);
   const setUser = useAuthStore((state) => state.setUser);
@@ -18,18 +18,16 @@ export default function EditProfilePage() {
   const [loading, setLoading] = useState(false);
 
   if (!user) {
-    // Якщо користувач не завантажений — можна показати лоадер або редірект
     return <p>Loading...</p>;
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
 
     try {
       const updated = await updateMe({ username });
 
-      // Оновлюємо Zustand
       setUser({
         ...user,
         username: updated.username,
@@ -44,7 +42,7 @@ export default function EditProfilePage() {
   };
 
   const handleCancel = () => {
-    router.push("/profile");
+    router.back(); // ⬅️ ВИМОГА GoIT: повернення на попередню сторінку
   };
 
   return (
@@ -68,7 +66,9 @@ export default function EditProfilePage() {
               type="text"
               className={css.input}
               value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                setUsername(e.target.value)
+              }
             />
           </div>
 
