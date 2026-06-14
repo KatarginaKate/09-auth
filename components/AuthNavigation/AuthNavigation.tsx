@@ -9,11 +9,7 @@ import css from "./AuthNavigation.module.css";
 export default function AuthNavigation() {
   const router = useRouter();
 
-  const {
-    isAuthenticated,
-    user,
-    clearIsAuthenticated,
-  } = useAuthStore();
+  const { isAuthenticated, user, clearIsAuthenticated } = useAuthStore();
 
   const handleLogout = async () => {
     try {
@@ -28,6 +24,12 @@ export default function AuthNavigation() {
 
   return (
     <>
+      {/* Home завжди видно */}
+      <li className={css.navigationItem}>
+        <Link href="/" prefetch={false} className={css.navigationLink}>
+          Home
+        </Link>
+      </li>
       {isAuthenticated ? (
         <>
           {/* Notes тільки для залогінених */}
@@ -54,10 +56,7 @@ export default function AuthNavigation() {
           <li className={css.navigationItem}>
             <p className={css.userEmail}>{user?.email}</p>
 
-            <button
-              className={css.logoutButton}
-              onClick={handleLogout}
-            >
+            <button className={css.logoutButton} onClick={handleLogout}>
               Logout
             </button>
           </li>

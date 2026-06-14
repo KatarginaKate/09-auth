@@ -29,7 +29,7 @@ export default function SignUpPage() {
         avatar: "",
       });
 
-      router.push("/profile");
+      router.replace("/profile", { scroll: false });
     } catch (err: unknown) {
       const message =
         typeof err === "object" &&
@@ -82,3 +82,4 @@ export default function SignUpPage() {
     </main>
   );
 }
+

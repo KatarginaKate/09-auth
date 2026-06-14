@@ -32,7 +32,7 @@ export default function SignInPage() {
       setUser(user);
 
       // 4) Редірект
-      router.push("/profile");
+      router.replace("/profile", { scroll: false });
     } catch (err: unknown) {
       const message =
         typeof err === "object" &&
