@@ -12,10 +12,6 @@ export async function getAuthHeaders() {
 
   const token = cookieStore.get("accessToken")?.value;
 
-  // if (!token) {
-  //   throw new Error("No access token found in cookies");
-  // }
-
   return {
     Authorization: `Bearer ${token}`,
   };
@@ -42,10 +38,12 @@ export const fetchNotes = async (params: {
 };
 
 export const fetchNoteById = async (id: string): Promise<Note> => {
-  const headers = await getAuthHeaders();
+  const cookieStore = await getAuthHeaders();
 
   const { data } = await api.get(`/notes/${id}`, {
-    headers,
+    headers: {
+      Cookie: cookieStore.toString(),
+    },
   });
 
   return data;
@@ -68,10 +66,12 @@ export const getMe = async () => {
 };
 
 export const checkSession = async () => {
-  const headers = await getAuthHeaders();
+  const cookieStore = await cookies();
 
   const { data } = await api.get("/users/me", {
-    headers,
+    headers: {
+      Cookie: cookieStore.toString(),
+    },
   });
 
   return data;

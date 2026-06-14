@@ -3,34 +3,51 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { login } from "@/lib/api/clientApi";
+import { useAuthStore } from "@/lib/store/authStore";
 import css from "./SignInPage.module.css";
 
 export default function SignInPage() {
   const router = useRouter();
   const [error, setError] = useState("");
 
+  const setUser = useAuthStore((state) => state.setUser);
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
 
     const formData = new FormData(e.currentTarget);
+
     const email = formData.get("email")?.toString() || "";
     const password = formData.get("password")?.toString() || "";
 
     try {
-      await login({ email, password });
+      const res = await login({ email, password });
+
+      const user = res?.user ?? res;
+
+      setUser(user);
+
       router.push("/profile");
     } catch (err: unknown) {
-      const errorResponse =
-        typeof err === "object" &&
-        err !== null &&
-        "response" in err &&
-        typeof (err as { response?: unknown }).response === "object" &&
-        (err as { response?: unknown }).response !== null
-          ? (err as { response: { data?: { message?: string } } }).response
-          : undefined;
+      const message = (() => {
+        if (
+          typeof err === "object" &&
+          err !== null &&
+          "response" in err &&
+          typeof (err as { response?: { data?: { message?: string } } })
+            .response?.data?.message === "string"
+        ) {
+          return (
+            (err as { response?: { data?: { message?: string } } }).response?.data
+              ?.message
+          );
+        }
 
-      setError(errorResponse?.data?.message || "Login failed");
+        return null;
+      })();
+
+      setError(message || "Login failed");
     }
   };
 
@@ -43,8 +60,8 @@ export default function SignInPage() {
           <label htmlFor="email">Email</label>
           <input
             id="email"
-            type="email"
             name="email"
+            type="email"
             className={css.input}
             required
           />
@@ -54,8 +71,8 @@ export default function SignInPage() {
           <label htmlFor="password">Password</label>
           <input
             id="password"
-            type="password"
             name="password"
+            type="password"
             className={css.input}
             required
           />
@@ -67,7 +84,7 @@ export default function SignInPage() {
           </button>
         </div>
 
-        <p className={css.error}>{error}</p>
+        {error && <p className={css.error}>{error}</p>}
       </form>
     </main>
   );
