@@ -33,7 +33,7 @@ export default function AuthNavigation() {
           {/* Notes тільки для залогінених */}
           <li className={css.navigationItem}>
             <Link
-              href="/notes"
+              href="/notes/filter/all"
               prefetch={false}
               className={css.navigationLink}
             >
