@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
+import { api } from '../../api';
 import { cookies } from 'next/headers';
+import { isAxiosError } from 'axios';
 import { logErrorResponse } from '../../_utils/utils';
 
 export async function POST() {
@@ -9,11 +11,7 @@ export async function POST() {
     const accessToken = cookieStore.get('accessToken')?.value;
     const refreshToken = cookieStore.get('refreshToken')?.value;
 
-    // Use fetch instead of a missing axios instance. Base URL can be provided
-    // via NEXT_PUBLIC_API_URL; otherwise request is sent to relative /auth/logout.
-    const base = process.env.NEXT_PUBLIC_API_URL ?? '';
-    await fetch(`${base}/auth/logout`, {
-      method: 'POST',
+    await api.post('auth/logout', null, {
       headers: {
         Cookie: `accessToken=${accessToken}; refreshToken=${refreshToken}`,
       },
@@ -24,7 +22,13 @@ export async function POST() {
 
     return NextResponse.json({ message: 'Logged out successfully' }, { status: 200 });
   } catch (error) {
-    // fetch throws generic errors; log and return 500
+    if (isAxiosError(error)) {
+      logErrorResponse(error.response?.data);
+      return NextResponse.json(
+        { error: error.message, response: error.response?.data },
+        { status: error.status }
+      );
+    }
     logErrorResponse({ message: (error as Error).message });
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }

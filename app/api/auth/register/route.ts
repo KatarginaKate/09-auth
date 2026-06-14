@@ -1,25 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
-// Use fetch to call external API to avoid missing import
+import { api } from '../../api';
 import { cookies } from 'next/headers';
 import { parse } from 'cookie';
-// removed axios dependency
+import { isAxiosError } from 'axios';
 import { logErrorResponse } from '../../_utils/utils';
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
 
-    const base = process.env.API_URL || '';
-    const res = await fetch(`${base}/auth/register`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-      // include credentials if upstream requires cookies
-      credentials: 'include',
-    });
+    const apiRes = await api.post('auth/register', body);
 
     const cookieStore = await cookies();
-    const setCookie = res.headers.get('set-cookie');
+    const setCookie = apiRes.headers['set-cookie'];
 
     if (setCookie) {
       const cookieArray = Array.isArray(setCookie) ? setCookie : [setCookie];
@@ -34,12 +27,18 @@ export async function POST(req: NextRequest) {
         if (parsed.accessToken) cookieStore.set('accessToken', parsed.accessToken, options);
         if (parsed.refreshToken) cookieStore.set('refreshToken', parsed.refreshToken, options);
       }
-      const data = await res.json();
-      return NextResponse.json(data, { status: res.status });
+      return NextResponse.json(apiRes.data, { status: apiRes.status });
     }
 
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   } catch (error) {
+    if (isAxiosError(error)) {
+      logErrorResponse(error.response?.data);
+      return NextResponse.json(
+        { error: error.message, response: error.response?.data },
+        { status: error.status }
+      );
+    }
     logErrorResponse({ message: (error as Error).message });
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }

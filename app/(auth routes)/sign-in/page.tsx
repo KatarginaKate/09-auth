@@ -3,12 +3,10 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { login } from "@/lib/api/clientApi";
-import { useAuthStore } from "@/lib/store/authStore";
 import css from "./SignInPage.module.css";
 
 export default function SignInPage() {
   const router = useRouter();
-  const { setUser } = useAuthStore();
   const [error, setError] = useState("");
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -22,8 +20,17 @@ export default function SignInPage() {
     try {
       await login({ email, password });
       router.push("/profile");
-    } catch (err: any) {
-      setError(err?.response?.data?.message || "Login failed");
+    } catch (err: unknown) {
+      const errorResponse =
+        typeof err === "object" &&
+        err !== null &&
+        "response" in err &&
+        typeof (err as { response?: unknown }).response === "object" &&
+        (err as { response?: unknown }).response !== null
+          ? (err as { response: { data?: { message?: string } } }).response
+          : undefined;
+
+      setError(errorResponse?.data?.message || "Login failed");
     }
   };
 
