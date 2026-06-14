@@ -17,6 +17,7 @@ export default function SignInPage() {
     setError("");
 
     const formData = new FormData(e.currentTarget);
+  
 
     const email = formData.get("email")?.toString() || "";
     const password = formData.get("password")?.toString() || "";
