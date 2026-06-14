@@ -12,9 +12,9 @@ export async function getAuthHeaders() {
 
   const token = cookieStore.get("accessToken")?.value;
 
-  if (!token) {
-    throw new Error("No access token found in cookies");
-  }
+  // if (!token) {
+  //   throw new Error("No access token found in cookies");
+  // }
 
   return {
     Authorization: `Bearer ${token}`,
@@ -56,10 +56,12 @@ export const fetchNoteById = async (id: string): Promise<Note> => {
 // -----------------------------
 
 export const getMe = async () => {
-  const headers = await getAuthHeaders();
+  const cookieStore = await cookies();
 
   const { data } = await api.get("/users/me", {
-    headers,
+    headers: {
+      Cookie: cookieStore.toString(),
+    },
   });
 
   return data;
