@@ -10,10 +10,14 @@ import type { User } from "@/types/user";
 export async function getCookieHeader(): Promise<string> {
   const cookieStore = await cookies();
 
-  return cookieStore
-    .getAll()
-    .map(({ name, value }) => `${name}=${value}`)
-    .join("; ");
+  const accessToken = cookieStore.get("accessToken")?.value;
+  const refreshToken = cookieStore.get("refreshToken")?.value;
+
+  // Якщо токенів немає — повертаємо порожній рядок
+  if (!accessToken || !refreshToken) return "";
+
+  // Порядок має значення
+  return `accessToken=${accessToken}; refreshToken=${refreshToken}`;
 }
 
 // -----------------------------
@@ -78,9 +82,7 @@ export const checkSession = async (): Promise<
   const cookieHeader = await getCookieHeader();
 
   const response = await api.get("/auth/session", {
-    headers: {
-      Cookie: cookieHeader,
-    },
+    headers: { Cookie: cookieHeader },
   });
 
   return response;

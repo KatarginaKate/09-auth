@@ -1,8 +1,9 @@
 import axios from "axios";
 
-const baseURL = `${process.env.NEXT_PUBLIC_API_URL}/api`;
+const raw = process.env.NEXT_PUBLIC_API_URL ?? "";
+const normalized = raw.replace(/\/+$/, ""); // прибирає всі слеші в кінці
 
 export const api = axios.create({
-  baseURL,
-  withCredentials: true, 
+  baseURL: `${normalized}`,
+  withCredentials: true,
 });
