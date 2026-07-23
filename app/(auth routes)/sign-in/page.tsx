@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { login, getMe } from "@/lib/api/clientApi";
 import { useAuthStore } from "@/lib/store/authStore";
 import css from "./SignInPage.module.css";
@@ -48,40 +49,44 @@ export default function SignInPage() {
   };
 
   return (
-    <main className={css.mainContent}>
-      <form className={css.form} onSubmit={handleSubmit}>
-        <h1 className={css.formTitle}>Sign in</h1>
+  <main className={css.mainContent}>
+    <form className={css.form} onSubmit={handleSubmit}>
+      <h1 className={css.formTitle}>Sign in</h1>
 
-        <div className={css.formGroup}>
-          <label htmlFor="email">Email</label>
-          <input
-            id="email"
-            name="email"
-            type="email"
-            className={css.input}
-            required
-          />
-        </div>
+      <div className={css.formGroup}>
+        <label htmlFor="email">Email</label>
+        <input
+          id="email"
+          name="email"
+          type="email"
+          className={css.input}
+          required
+        />
+      </div>
 
-        <div className={css.formGroup}>
-          <label htmlFor="password">Password</label>
-          <input
-            id="password"
-            name="password"
-            type="password"
-            className={css.input}
-            required
-          />
-        </div>
+      <div className={css.formGroup}>
+        <label htmlFor="password">Password</label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+          className={css.input}
+          required
+        />
+      </div>
 
-        <div className={css.actions}>
-          <button type="submit" className={css.submitButton}>
-            Log in
-          </button>
-        </div>
+      <div className={css.actions}>
+        <button type="submit" className={css.submitButton}>
+          Log in
+        </button>
 
-        {error && <p className={css.error}>{error}</p>}
-      </form>
-    </main>
+        <Link href="/forgot-password" className={css.forgotLink}>
+          Забули пароль?
+        </Link>
+      </div>
+
+      {error && <p className={css.error}>{error}</p>}
+    </form>
+  </main>
   );
 }

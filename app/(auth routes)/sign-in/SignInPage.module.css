@@ -66,3 +66,15 @@
   margin-top: 4px;
   text-align: center;
 }
+
+.forgotLink {
+  margin-top: 10px;
+  font-size: 14px;
+  color: #0070f3;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.forgotLink:hover {
+  text-decoration: underline;
+}
