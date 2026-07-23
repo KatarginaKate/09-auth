@@ -19,6 +19,7 @@ A full-stack Notes application built with Next.js App Router featuring authentic
 - 🎨 CSS Modules
 - 🔐 JWT Authentication
 - ▲ Vercel Deployment
+- ▲ MongoDB
 
 ## 📦 Installation
 
@@ -87,7 +88,11 @@ npm start
 
 ## 🌐 Live Demo
 
+Frontend (Vercel):
 🔗 https://09-auth-five-omega.vercel.app/
+
+Backend (Render):
+🔗 https://notes-back-a3ym.onrender.com
 
 ## 👩‍💻 Author
 
