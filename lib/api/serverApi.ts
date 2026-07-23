@@ -4,20 +4,14 @@ import type { Note } from "@/types/note";
 import type { User } from "@/types/user";
 
 // -----------------------------
-// AUTH HELPERS (CONSISTENT COOKIE ONLY)
+// COOKIE HEADER (SSR)
 // -----------------------------
 
 export async function getCookieHeader(): Promise<string> {
   const cookieStore = await cookies();
+  const all = cookieStore.getAll();
 
-  const accessToken = cookieStore.get("accessToken")?.value;
-  const refreshToken = cookieStore.get("refreshToken")?.value;
-
-  // Якщо токенів немає — повертаємо порожній рядок
-  if (!accessToken || !refreshToken) return "";
-
-  // Порядок має значення
-  return `accessToken=${accessToken}; refreshToken=${refreshToken}`;
+  return all.map(c => `${c.name}=${c.value}`).join("; ");
 }
 
 // -----------------------------
@@ -42,9 +36,7 @@ export const fetchNotes = async (params: {
   return data;
 };
 
-export const fetchNoteById = async (
-  id: string
-): Promise<Note> => {
+export const fetchNoteById = async (id: string): Promise<Note> => {
   const cookieHeader = await getCookieHeader();
 
   const { data } = await api.get(`/notes/${id}`, {
@@ -76,9 +68,7 @@ export const getMe = async (): Promise<User> => {
 // SESSION
 // -----------------------------
 
-export const checkSession = async (): Promise<
-  import("axios").AxiosResponse
-> => {
+export const checkSession = async () => {
   const cookieHeader = await getCookieHeader();
 
   const response = await api.get("/auth/session", {
@@ -87,3 +77,4 @@ export const checkSession = async (): Promise<
 
   return response;
 };
+
