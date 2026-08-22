@@ -23,9 +23,7 @@ export default function EditProfilePage() {
     return <p>Loading...</p>;
   }
 
-  const handleAvatarChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-  ) => {
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
 
     if (!file) return;
@@ -34,9 +32,7 @@ export default function EditProfilePage() {
     setAvatarPreview(URL.createObjectURL(file));
   };
 
-  const handleSubmit = async (
-    e: React.FormEvent<HTMLFormElement>,
-  ) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
 
@@ -53,7 +49,7 @@ export default function EditProfilePage() {
 
         updatedUser = {
           ...updatedUser,
-          avatar: avatarResponse.avatar,
+          avatar: avatarResponse.url,
         };
       }
 
@@ -114,11 +110,7 @@ export default function EditProfilePage() {
           <p>Email: {user.email}</p>
 
           <div className={css.actions}>
-            <button
-              type="submit"
-              className={css.saveButton}
-              disabled={loading}
-            >
+            <button type="submit" className={css.saveButton} disabled={loading}>
               {loading ? "Saving..." : "Save"}
             </button>
 
