@@ -25,7 +25,6 @@ export const fetchNotes = async (params: {
   tag?: string;
 }): Promise<{ notes: Note[]; totalPages: number }> => {
   const cookieHeader = await getCookieHeader();
-
   const { data } = await api.get("/notes", {
     headers: {
       Cookie: cookieHeader,
@@ -55,13 +54,18 @@ export const fetchNoteById = async (id: string): Promise<Note> => {
 export const getMe = async (): Promise<User> => {
   const cookieHeader = await getCookieHeader();
 
-  const { data } = await api.get("/users/me", {
+  const response = await fetch("http://localhost:3001/api/users/me", {
     headers: {
       Cookie: cookieHeader,
     },
+    cache: "no-store",
   });
 
-  return data;
+  if (!response.ok) {
+    throw new Error(`Failed to fetch user: ${response.status}`);
+  }
+
+  return response.json();
 };
 
 // -----------------------------

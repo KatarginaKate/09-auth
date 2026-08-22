@@ -73,13 +73,15 @@ export default function EditProfilePage() {
         <h1 className={css.formTitle}>Edit Profile</h1>
 
         <div className={css.avatarWrapper}>
-          <Image
-            src={avatarPreview}
-            alt="User Avatar"
-            width={120}
-            height={120}
-            className={css.avatar}
-          />
+          {avatarPreview && (
+            <Image
+              src={avatarPreview}
+              alt="User Avatar"
+              width={120}
+              height={120}
+              className={css.avatar}
+            />
+          )}
 
           <label htmlFor="avatar" className={css.avatarButton}>
             Change avatar
