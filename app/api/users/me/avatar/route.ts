@@ -1,17 +1,16 @@
-export const dynamic = "force-dynamic";
-
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
+import { api } from "@/lib/api/api";
 import { isAxiosError } from "axios";
 
-import { api } from "../../../api";
-import { logErrorResponse } from "../../../_utils/utils";
+export const dynamic = "force-dynamic";
 
 export async function PATCH(request: Request) {
-
-    console.log("🔥🔥🔥 AVATAR ROUTE HIT");
   try {
     const cookieStore = await cookies();
+
+    console.log("🔥 AVATAR COOKIES:", cookieStore.toString());
+
     const formData = await request.formData();
 
     const res = await api.patch("/users/me/avatar", formData, {
@@ -25,7 +24,7 @@ export async function PATCH(request: Request) {
     });
   } catch (error) {
     if (isAxiosError(error)) {
-      logErrorResponse(error.response?.data);
+      console.log("🔥 AVATAR BACKEND ERROR:", error.response?.data);
 
       return NextResponse.json(
         {
@@ -37,10 +36,6 @@ export async function PATCH(request: Request) {
         }
       );
     }
-
-    logErrorResponse({
-      message: (error as Error).message,
-    });
 
     return NextResponse.json(
       { error: "Internal Server Error" },

@@ -1,6 +1,7 @@
 import axios from "axios";
 import type { Note, NoteTag } from "@/types/note";
 import type { User } from "@/types/user";
+import { api } from "./api";
 
 export const clientApi = axios.create({
   baseURL: "/api",
