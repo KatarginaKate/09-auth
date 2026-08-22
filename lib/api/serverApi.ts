@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import { api } from "./api";
 import type { Note } from "@/types/note";
 import type { User } from "@/types/user";
+import { headers } from "next/headers";
 
 // -----------------------------
 // COOKIE HEADER (SSR)
@@ -53,14 +54,26 @@ export const fetchNoteById = async (id: string): Promise<Note> => {
 
 export const getMe = async (): Promise<User> => {
   const cookieHeader = await getCookieHeader();
+  const headersList = await headers();
 
-  const { data } = await api.get("/users/me", {
-    headers: {
-      Cookie: cookieHeader,
-    },
-  });
+  const host = headersList.get("host");
+  const protocol = process.env.NODE_ENV === "development" ? "http" : "https";
 
-  return data;
+  const response = await fetch(
+    `${protocol}://${host}/api/users/me`,
+    {
+      headers: {
+        Cookie: cookieHeader,
+      },
+      cache: "no-store",
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch user: ${response.status}`);
+  }
+
+  return response.json();
 };
 
 // -----------------------------
