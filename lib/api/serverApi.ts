@@ -54,7 +54,7 @@ export const fetchNoteById = async (id: string): Promise<Note> => {
 export const getMe = async (): Promise<User> => {
   const cookieHeader = await getCookieHeader();
 
-  const response = await fetch("http://localhost:3001/api/users/me", {
+  const response = await fetch("http://localhost:3000/api/users/me", {
     headers: {
       Cookie: cookieHeader,
     },
