@@ -49,6 +49,7 @@ interface UpdateMeParams {
   username?: string;
 }
 
+
 // -----------------------------
 // NOTES
 // -----------------------------
@@ -117,4 +118,14 @@ export const getMe = async (): Promise<User> => {
 export const updateMe = async (data: UpdateMeParams): Promise<User> => {
   const res = await clientApi.patch("/users/me", data); // JSON, не FormData
   return res.data;
+};
+
+export const updateAvatar = async (file: File) => {
+  const formData = new FormData();
+
+  formData.append("avatar", file);
+
+  const { data } = await clientApi.patch("/users/me/avatar", formData);
+
+  return data;
 };
