@@ -94,6 +94,12 @@ Frontend (Vercel):
 Backend (Render):
 🔗 https://notes-back-a3ym.onrender.com
 
+## API Documentation
+
+Swagger API documentation is available here:
+
+[Swagger UI](https://reserw-harmonic-back.onrender.com/api-docs)
+
 ## 👩‍💻 Author
 
 **Kateryna Nehoda**
