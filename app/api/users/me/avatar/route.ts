@@ -1,44 +1,30 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import { api } from "@/lib/api/api";
-import { isAxiosError } from "axios";
 
 export const dynamic = "force-dynamic";
 
 export async function PATCH(request: Request) {
   try {
-    const cookieStore = await cookies();
-
-    console.log("🔥 AVATAR COOKIES:", cookieStore.toString());
-
     const formData = await request.formData();
+    const cookieStore = await cookies();
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
-    const res = await api.patch("/users/me/avatar", formData, {
+    const res = await fetch(`${apiUrl}/users/me/avatar`, {
+      method: "PATCH",
       headers: {
         Cookie: cookieStore.toString(),
       },
+      body: formData,
     });
 
-    return NextResponse.json(res.data, {
-      status: res.status,
-    });
+    const data = await res.json();
+
+    return NextResponse.json(data, { status: res.status });
   } catch (error) {
-    if (isAxiosError(error)) {
-      console.log("🔥 AVATAR BACKEND ERROR:", error.response?.data);
-
-      return NextResponse.json(
-        {
-          error: error.message,
-          response: error.response?.data,
-        },
-        {
-          status: error.response?.status ?? 500,
-        }
-      );
-    }
+    console.error("Avatar update error:", error);
 
     return NextResponse.json(
-      { error: "Internal Server Error" },
+      { error: "Failed to update avatar" },
       { status: 500 }
     );
   }

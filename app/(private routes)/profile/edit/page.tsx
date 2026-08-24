@@ -49,7 +49,7 @@ export default function EditProfilePage() {
 
         updatedUser = {
           ...updatedUser,
-          avatar: avatarResponse.url,
+          avatar: avatarResponse.avatar ?? avatarResponse.url,
         };
       }
 

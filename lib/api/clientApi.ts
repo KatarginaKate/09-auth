@@ -49,6 +49,11 @@ interface UpdateMeParams {
   username?: string;
 }
 
+export interface UpdateAvatarResponse {
+  url: string;
+  avatar: string;
+}
+
 
 // -----------------------------
 // NOTES
@@ -120,7 +125,9 @@ export const updateMe = async (data: UpdateMeParams): Promise<User> => {
   return res.data;
 };
 
-export const updateAvatar = async (file: File) => {
+export const updateAvatar = async (
+  file: File
+): Promise<UpdateAvatarResponse> => {
   const formData = new FormData();
 
   formData.append("avatar", file);

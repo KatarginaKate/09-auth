@@ -11,45 +11,70 @@ export async function GET() {
     const accessToken = cookieStore.get("accessToken")?.value;
     const refreshToken = cookieStore.get("refreshToken")?.value;
 
+    // Якщо accessToken є — все ок
     if (accessToken) {
       return NextResponse.json({ success: true });
     }
 
+    // Якщо accessToken немає, але є refreshToken — оновлюємо
     if (refreshToken) {
-      const apiRes = await api.get("auth/session", {
+      // Правильний спосіб передати cookies у SSR
+      const cookieHeader = cookieStore
+        .getAll()
+        .map(({ name, value }) => `${name}=${value}`)
+        .join("; ");
+
+      const apiRes = await api.post("auth/refresh", null, {
         headers: {
-          Cookie: cookieStore.toString(),
+          Cookie: cookieHeader,
         },
       });
 
       const setCookie = apiRes.headers["set-cookie"];
 
       if (setCookie) {
+        const response = NextResponse.json({ success: true });
+
         const cookieArray = Array.isArray(setCookie) ? setCookie : [setCookie];
+
         for (const cookieStr of cookieArray) {
           const parsed = parse(cookieStr);
 
-          const options = {
-            expires: parsed.Expires ? new Date(parsed.Expires) : undefined,
-            path: parsed.Path,
-            maxAge: Number(parsed["Max-Age"]),
-          };
+          const expires = parsed.Expires ? new Date(parsed.Expires) : undefined;
 
-          if (parsed.accessToken)
-            cookieStore.set("accessToken", parsed.accessToken, options);
-          if (parsed.refreshToken)
-            cookieStore.set("refreshToken", parsed.refreshToken, options);
+          const options = {
+              httpOnly: true,
+              secure: process.env.NODE_ENV === "production",
+              sameSite: "lax",
+              path: "/",
+              expires,
+          } as const;
+
+          if (parsed.accessToken) {
+            response.cookies.set("accessToken", parsed.accessToken, options);
+          }
+
+          if (parsed.refreshToken) {
+            response.cookies.set("refreshToken", parsed.refreshToken, options);
+          }
+
+          if (parsed.sessionId) {
+            response.cookies.set("sessionId", parsed.sessionId, options);
+          }
         }
-        return NextResponse.json({ success: true }, { status: 200 });
+
+        return response;
       }
     }
-    return NextResponse.json({ success: false }, { status: 200 });
+
+    return NextResponse.json({ success: false });
   } catch (error) {
     if (isAxiosError(error)) {
       logErrorResponse(error.response?.data);
-      return NextResponse.json({ success: false }, { status: 200 });
+      return NextResponse.json({ success: false });
     }
+
     logErrorResponse({ message: (error as Error).message });
-    return NextResponse.json({ success: false }, { status: 200 });
+    return NextResponse.json({ success: false });
   }
 }
