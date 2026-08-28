@@ -1,5 +1,5 @@
 .sidebar {
-  background-color: #333;
+  background-color: #1c232d;
   min-height: 160vh;
   padding: 20px 0;
 }
@@ -24,6 +24,6 @@
 }
 
 .menuLink:hover {
-  background-color: #444;
-  color: #ddd;
+  background-color: #2b3543;
+  color: #c5ced8;
 }

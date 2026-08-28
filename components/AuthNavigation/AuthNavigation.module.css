@@ -17,7 +17,7 @@
 
 .logoutButton:hover {
   background-color: white;
-  color: #333;
+  color: #1c232d;
 }
 
 .navigationItem {
@@ -32,5 +32,5 @@
 }
 
 .navigationLink:hover {
-  color: #ddd;
+  color: #c5ced8;
 }

@@ -1,3 +1,85 @@
+ :root {
+  color-scheme: light;
+  --background: #f8f9fa;
+  --surface: #ffffff;
+  --surface-muted: #f0f0f0;
+  --text-primary: #212529;
+  --text-secondary: #495057;
+  --text-muted: #6c757d;
+  --border: #dee2e6;
+  --input-border: #ced4da;
+  --primary: #0d6efd;
+  --primary-hover: #0b5ed7;
+  --on-primary: #ffffff;
+  --tag-background: #e7f1ff;
+  --tag-border: #b6d4fe;
+  --danger: #dc3545;
+  --danger-hover: #bb2d3b;
+  --disabled: #b1b8c2;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --background: #12161c;
+    --surface: #1c232d;
+    --surface-muted: #171d25;
+    --text-primary: #f1f5f9;
+    --text-secondary: #c5ced8;
+    --text-muted: #9aa7b5;
+    --border: #354150;
+    --input-border: #526174;
+    --primary: #70a7ff;
+    --primary-hover: #91baff;
+    --on-primary: #101820;
+    --tag-background: #203858;
+    --tag-border: #3d6596;
+    --danger: #ff7b87;
+    --danger-hover: #ff9da6;
+    --disabled: #4b5563;
+  }
+}
+
+html[data-theme="light"] {
+  color-scheme: light;
+  --background: #f8f9fa;
+  --surface: #ffffff;
+  --surface-muted: #f0f0f0;
+  --text-primary: #212529;
+  --text-secondary: #495057;
+  --text-muted: #6c757d;
+  --border: #dee2e6;
+  --input-border: #ced4da;
+  --primary: #0d6efd;
+  --primary-hover: #0b5ed7;
+  --on-primary: #ffffff;
+  --tag-background: #e7f1ff;
+  --tag-border: #b6d4fe;
+  --danger: #dc3545;
+  --danger-hover: #bb2d3b;
+  --disabled: #b1b8c2;
+}
+
+html[data-theme="dark"] {
+  color-scheme: dark;
+  --background: #12161c;
+  --surface: #1c232d;
+  --surface-muted: #171d25;
+  --text-primary: #f1f5f9;
+  --text-secondary: #c5ced8;
+  --text-muted: #9aa7b5;
+  --border: #354150;
+  --input-border: #526174;
+  --primary: #70a7ff;
+  --primary-hover: #91baff;
+  --on-primary: #101820;
+  --tag-background: #203858;
+  --tag-border: #3d6596;
+  --danger: #ff7b87;
+  --danger-hover: #ff9da6;
+  --disabled: #4b5563;
+}
+
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
     Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
@@ -5,5 +87,6 @@ body {
   flex-direction: column;
   min-height: 100vh;
   margin: 0;
-  background-color: #f8f9fa;
+  background-color: var(--background);
+  color: var(--text-primary);
 }

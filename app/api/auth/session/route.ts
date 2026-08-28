@@ -13,7 +13,7 @@ export async function GET() {
 
     // Якщо accessToken є — все ок
     if (accessToken) {
-      return NextResponse.json({ success: true });
+      return NextResponse.json({ isLoggedIn: true });
     }
 
     // Якщо accessToken немає, але є refreshToken — оновлюємо
@@ -33,7 +33,7 @@ export async function GET() {
       const setCookie = apiRes.headers["set-cookie"];
 
       if (setCookie) {
-        const response = NextResponse.json({ success: true });
+        const response = NextResponse.json({ isLoggedIn: true });
 
         const cookieArray = Array.isArray(setCookie) ? setCookie : [setCookie];
 
@@ -67,14 +67,14 @@ export async function GET() {
       }
     }
 
-    return NextResponse.json({ success: false });
+    return NextResponse.json({ isLoggedIn: false });
   } catch (error) {
     if (isAxiosError(error)) {
       logErrorResponse(error.response?.data);
-      return NextResponse.json({ success: false });
+      return NextResponse.json({ isLoggedIn: false });
     }
 
     logErrorResponse({ message: (error as Error).message });
-    return NextResponse.json({ success: false });
+    return NextResponse.json({ isLoggedIn: false });
   }
 }
