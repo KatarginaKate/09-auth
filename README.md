@@ -98,7 +98,7 @@ Backend (Render):
 
 Swagger API documentation is available here:
 
-[Swagger UI](https://notes-back-a3ym.onrender.com/docs/)
+[Swagger UI](https://notes-back-a3ym.onrender.com/api-docs/)
 
 ## 👩‍💻 Author
 
