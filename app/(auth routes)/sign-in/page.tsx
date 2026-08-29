@@ -60,6 +60,7 @@ export default function SignInPage() {
           name="email"
           type="email"
           className={css.input}
+          autoComplete="off"
           required
         />
       </div>
@@ -71,6 +72,7 @@ export default function SignInPage() {
           name="password"
           type="password"
           className={css.input}
+          autoComplete="off"
           required
         />
       </div>
