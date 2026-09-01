@@ -55,6 +55,19 @@ function NoteList({ notes }: NoteListProps) {
   }
 
   const visibleNotes = notes.filter((note) => {
+    const userIds = [currentUser.id, currentUser._id].filter(Boolean) as string[];
+    const noteIds = [
+      note.userId,
+      note.ownerId,
+      note.authorId,
+      note.user?._id,
+      note.user?.id,
+      note.owner?._id,
+      note.owner?.id,
+      note.author?._id,
+      note.author?.id,
+    ].filter(Boolean) as string[];
+
     const noteEmails = [
       note.userEmail,
       note.ownerEmail,
@@ -64,13 +77,13 @@ function NoteList({ notes }: NoteListProps) {
       note.author?.email,
     ].filter(Boolean) as string[];
 
-    if (noteEmails.length === 0) {
-      return false;
-    }
-
-    return noteEmails.some(
+    const emailMatch = noteEmails.some(
       (email) => email.toLowerCase() === currentUser.email.toLowerCase()
     );
+
+    const idMatch = noteIds.some((id) => userIds.includes(id));
+
+    return emailMatch || idMatch;
   });
 
   return (

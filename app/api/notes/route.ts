@@ -41,29 +41,25 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const cookieStore = await cookies();
-
     const body = await request.json();
-    console.log("POST /api/notes body:", body);
+    const cookieHeader = cookieStore.toString();
 
     const res = await api.post('/notes', body, {
       headers: {
-        Cookie: cookieStore.toString(),
+        Cookie: cookieHeader,
         'Content-Type': 'application/json',
       },
     });
 
-    console.log("POST /api/notes response:", res.data);
     return NextResponse.json(res.data, { status: res.status });
   } catch (error) {
     if (isAxiosError(error)) {
-      console.error("POST /api/notes error:", error.message, error.response?.data);
       logErrorResponse(error.response?.data);
       return NextResponse.json(
         { error: error.message, response: error.response?.data },
         { status: error.response?.status ?? 500 }
       );
     }
-    console.error("POST /api/notes error:", (error as Error).message);
     logErrorResponse({ message: (error as Error).message });
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }

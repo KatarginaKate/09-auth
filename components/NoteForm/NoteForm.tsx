@@ -36,32 +36,44 @@ export default function NoteForm() {
     mutationFn: createNote,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["notes"] });
-      clearDraft(); // очищаємо чернетку
-      router.back(); // повертаємося назад
+      clearDraft();
+      router.back();
     },
-    onError: (error) => {
-      const errorMessage = error instanceof Error ? error.message : "Failed to create note";
-      console.error("Note creation error:", error);
+    onError: (error: unknown) => {
+      let errorMessage = "Failed to create note";
+
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      } else if (typeof error === "object" && error !== null) {
+        const errorObj = error as any;
+        if (errorObj.response?.data?.message) {
+          errorMessage = errorObj.response.data.message;
+        } else if (errorObj.response?.data?.error) {
+          errorMessage = errorObj.response.data.error;
+        } else if (errorObj.message) {
+          errorMessage = errorObj.message;
+        }
+      }
+
       setError(errorMessage);
     },
   });
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    setError("");
     
-    const formData = new FormData(e.currentTarget);
-    const values: FormValues = {
-      title: formData.get("title") as string,
-      content: formData.get("content") as string,
-      tag: formData.get("tag") as FormValues["tag"],
-    };
-
-    console.log("Creating note with values:", values);
-    
-    if (!values.title.trim()) {
+    // Get form values directly from state (already controlled)
+    if (!title.trim()) {
       setError("Title is required");
       return;
     }
+
+    const values: FormValues = {
+      title: title.trim(),
+      content: content.trim(),
+      tag: tag,
+    };
 
     createMutation.mutate(values);
   }

@@ -88,20 +88,20 @@ export const fetchNotes = async (
 };
 
 export const fetchNoteById = async (id: string): Promise<Note> => {
-  console.log("fetchNoteById called with:", id);
   const { data } = await clientApi.get(`/notes/${id}`);
-  console.log("fetchNoteById response:", data);
   return normalizeNote(data);
 };
 
 export const createNote = async (data: CreateNoteParams): Promise<Note> => {
-  console.log("createNote called with:", data);
   try {
     const res = await clientApi.post("/notes", data);
-    console.log("createNote response:", res.data);
+
+    if (!res.data) {
+      throw new Error("No data returned from server");
+    }
+
     return normalizeNote(res.data);
   } catch (error) {
-    console.error("createNote error:", error);
     throw error;
   }
 };
@@ -111,9 +111,7 @@ export const deleteNote = async (id: string): Promise<Note> => {
     throw new Error("Note id is missing");
   }
 
-  console.log("DELETE request url:", `/notes/${id}`);
   const res = await clientApi.delete(`/notes/${id}`);
-  console.log("DELETE response:", res.data);
   return normalizeNote(res.data);
 };
 

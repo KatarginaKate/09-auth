@@ -17,14 +17,21 @@ export interface Note {
   userEmail?: string;
   ownerId?: string;
   ownerEmail?: string;
+  authorId?: string;
   authorEmail?: string;
   user?: {
+    _id?: string;
+    id?: string;
     email?: string;
   };
   owner?: {
+    _id?: string;
+    id?: string;
     email?: string;
   };
   author?: {
+    _id?: string;
+    id?: string;
     email?: string;
   };
 }
