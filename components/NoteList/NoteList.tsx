@@ -25,7 +25,10 @@ function NoteList({ notes }: NoteListProps) {
 
           return {
             ...current,
-            notes: current.notes.filter((note) => note.id !== deletedId),
+            notes: current.notes.filter((note) => {
+              const currentId = note.id ?? (note as Note & { _id?: string })._id;
+              return currentId !== deletedId;
+            }),
           };
         }
       );
@@ -37,38 +40,45 @@ function NoteList({ notes }: NoteListProps) {
 
   const handleDelete = (id: string) => {
     if (!id) {
+      console.warn("Delete blocked: note id is missing");
       return;
     }
 
+    console.log("DELETE note id:", id);
     deleteMutation.mutate(id);
   };
 
   return (
     <ul className={css.list}>
-      {notes.map((note, index) => (
-        <li key={String(note.id ?? `note-${index}`)} className={css.listItem}>
-          <h2 className={css.title}>{note.title}</h2>
+      {notes.map((note, index) => {
+        const noteId = note.id ?? (note as Note & { _id?: string })._id;
 
-          <p className={css.content}>{note.content}</p>
+        if (!noteId) return null;
 
-          <div className={css.footer}>
-            <span className={css.tag}>{note.tag}</span>
+        return (
+          <li key={String(noteId ?? `note-${index}`)} className={css.listItem}>
+            <h2 className={css.title}>{note.title}</h2>
 
-            {/* 🔥 Додаємо View details */}
-            <Link href={`/notes/${note.id}`} className={css.link}>
-              View details
-            </Link>
+            <p className={css.content}>{note.content}</p>
 
-            <button
-              className={css.button}
-              onClick={() => handleDelete(note.id)}
-              disabled={deleteMutation.isPending}
-            >
-              {deleteMutation.isPending ? "Deleting..." : "Delete"}
-            </button>
-          </div>
-        </li>
-      ))}
+            <div className={css.footer}>
+              <span className={css.tag}>{note.tag}</span>
+
+              <Link href={`/notes/${noteId}`} className={css.link}>
+                View details
+              </Link>
+
+              <button
+                className={css.button}
+                onClick={() => handleDelete(noteId)}
+                disabled={deleteMutation.isPending}
+              >
+                {deleteMutation.isPending ? "Deleting..." : "Delete"}
+              </button>
+            </div>
+          </li>
+        );
+      })}
     </ul>
   );
 }

@@ -7,15 +7,34 @@ import { logErrorResponse } from '../../_utils/utils';
 export async function POST() {
   try {
     const cookieStore = await cookies();
-
+    const allCookies = cookieStore.getAll();
     const accessToken = cookieStore.get('accessToken')?.value;
     const refreshToken = cookieStore.get('refreshToken')?.value;
 
-    await api.post('auth/logout', null, {
-      headers: {
-        Cookie: `accessToken=${accessToken}; refreshToken=${refreshToken}`,
-      },
-    });
+    const cookieHeader = allCookies
+      .map(({ name, value }) => `${name}=${value}`)
+      .join('; ');
+
+    if (accessToken || refreshToken) {
+      try {
+        await api.post('/auth/logout', null, {
+          headers: {
+            Cookie: cookieHeader,
+          },
+        });
+      } catch (error) {
+        if (isAxiosError(error)) {
+          const status = error.response?.status;
+
+          if (status !== 401 && status !== 404) {
+            logErrorResponse(error.response?.data);
+            throw error;
+          }
+        } else {
+          throw error;
+        }
+      }
+    }
 
     cookieStore.delete('accessToken');
     cookieStore.delete('refreshToken');

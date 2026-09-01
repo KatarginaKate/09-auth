@@ -4,6 +4,21 @@ import type { Note } from "@/types/note";
 import type { User } from "@/types/user";
 import { headers } from "next/headers";
 
+const normalizeNote = (note: Partial<Note> & { _id?: string }): Note => {
+  const id = note.id ?? note._id;
+
+  if (!id) {
+    throw new Error("Note id is missing");
+  }
+
+  return {
+    ...note,
+    id,
+    createdAt: note.createdAt ?? "",
+    updatedAt: note.updatedAt ?? "",
+  } as Note;
+};
+
 // -----------------------------
 // COOKIE HEADER (SSR)
 // -----------------------------
@@ -33,7 +48,12 @@ export const fetchNotes = async (params: {
     params,
   });
 
-  return data;
+  return {
+    ...data,
+    notes: Array.isArray(data?.notes)
+      ? data.notes.map((note: Partial<Note> & { _id?: string }) => normalizeNote(note))
+      : [],
+  };
 };
 
 export const fetchNoteById = async (id: string): Promise<Note> => {
@@ -45,7 +65,7 @@ export const fetchNoteById = async (id: string): Promise<Note> => {
     },
   });
 
-  return data;
+  return normalizeNote(data);
 };
 
 // -----------------------------
