@@ -7,6 +7,7 @@ import Link from "next/link";
 import css from "./NoteList.module.css";
 import type { Note } from "../../types/note";
 import type { FetchNotesResponse } from "../../lib/api/clientApi";
+import { useAuthStore } from "../../lib/store/authStore";
 
 interface NoteListProps {
   notes: Note[];
@@ -14,6 +15,7 @@ interface NoteListProps {
 
 function NoteList({ notes }: NoteListProps) {
   const queryClient = useQueryClient();
+  const currentUser = useAuthStore((state) => state.user);
 
   const deleteMutation = useMutation({
     mutationFn: deleteNote,
@@ -48,9 +50,32 @@ function NoteList({ notes }: NoteListProps) {
     deleteMutation.mutate(id);
   };
 
+  if (!currentUser?.email) {
+    return <ul className={css.list} />;
+  }
+
+  const visibleNotes = notes.filter((note) => {
+    const noteEmails = [
+      note.userEmail,
+      note.ownerEmail,
+      note.authorEmail,
+      note.user?.email,
+      note.owner?.email,
+      note.author?.email,
+    ].filter(Boolean) as string[];
+
+    if (noteEmails.length === 0) {
+      return false;
+    }
+
+    return noteEmails.some(
+      (email) => email.toLowerCase() === currentUser.email.toLowerCase()
+    );
+  });
+
   return (
     <ul className={css.list}>
-      {notes.map((note, index) => {
+      {visibleNotes.map((note, index) => {
         const noteId = note.id ?? (note as Note & { _id?: string })._id;
 
         if (!noteId) return null;

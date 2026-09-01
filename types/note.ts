@@ -13,5 +13,19 @@ export interface Note {
   tag: NoteTag;
   createdAt: string;
   updatedAt: string;
+  userId?: string;
+  userEmail?: string;
+  ownerId?: string;
+  ownerEmail?: string;
+  authorEmail?: string;
+  user?: {
+    email?: string;
+  };
+  owner?: {
+    email?: string;
+  };
+  author?: {
+    email?: string;
+  };
 }
 

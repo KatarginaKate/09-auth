@@ -95,8 +95,15 @@ export const fetchNoteById = async (id: string): Promise<Note> => {
 };
 
 export const createNote = async (data: CreateNoteParams): Promise<Note> => {
-  const res = await clientApi.post("/notes", data);
-  return normalizeNote(res.data);
+  console.log("createNote called with:", data);
+  try {
+    const res = await clientApi.post("/notes", data);
+    console.log("createNote response:", res.data);
+    return normalizeNote(res.data);
+  } catch (error) {
+    console.error("createNote error:", error);
+    throw error;
+  }
 };
 
 export const deleteNote = async (id: string): Promise<Note> => {

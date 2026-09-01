@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 
@@ -30,6 +30,7 @@ export default function NoteForm() {
   const [tag, setTag] = useState<FormValues["tag"]>(
     (draft.tag as FormValues["tag"]) || initialDraft.tag
   );
+  const [error, setError] = useState<string>("");
 
   const createMutation = useMutation({
     mutationFn: createNote,
@@ -38,14 +39,29 @@ export default function NoteForm() {
       clearDraft(); // очищаємо чернетку
       router.back(); // повертаємося назад
     },
+    onError: (error) => {
+      const errorMessage = error instanceof Error ? error.message : "Failed to create note";
+      console.error("Note creation error:", error);
+      setError(errorMessage);
+    },
   });
 
-  async function handleSubmit(formData: FormData) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    
+    const formData = new FormData(e.currentTarget);
     const values: FormValues = {
       title: formData.get("title") as string,
       content: formData.get("content") as string,
       tag: formData.get("tag") as FormValues["tag"],
     };
+
+    console.log("Creating note with values:", values);
+    
+    if (!values.title.trim()) {
+      setError("Title is required");
+      return;
+    }
 
     createMutation.mutate(values);
   }
@@ -55,7 +71,7 @@ export default function NoteForm() {
   }
 
   return (
-    <form action={handleSubmit} className={css.form}>
+    <form onSubmit={handleSubmit} className={css.form}>
       <div className={css.formGroup}>
         <label htmlFor="title">Title</label>
 
@@ -132,6 +148,8 @@ export default function NoteForm() {
           {createMutation.isPending ? "Saving..." : "Create note"}
         </button>
       </div>
+
+      {error && <p style={{ color: "red", marginTop: "10px" }}>{error}</p>}
     </form>
   );
 }

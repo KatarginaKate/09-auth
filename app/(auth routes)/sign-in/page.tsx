@@ -50,7 +50,12 @@ export default function SignInPage() {
 
   return (
   <main className={css.mainContent}>
-    <form className={css.form} onSubmit={handleSubmit}>
+    <form
+      className={css.form}
+      onSubmit={handleSubmit}
+      autoComplete="off"
+      method="post"
+    >
       <h1 className={css.formTitle}>Sign in</h1>
 
       <div className={css.formGroup}>
@@ -60,7 +65,9 @@ export default function SignInPage() {
           name="email"
           type="email"
           className={css.input}
-          autoComplete="off"
+          autoComplete="new-email"
+          spellCheck={false}
+          autoCapitalize="none"
           required
         />
       </div>
@@ -72,7 +79,8 @@ export default function SignInPage() {
           name="password"
           type="password"
           className={css.input}
-          autoComplete="off"
+          autoComplete="new-password"
+          spellCheck={false}
           required
         />
       </div>
