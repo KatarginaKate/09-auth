@@ -29,6 +29,21 @@ interface CreateNoteParams {
   tag: NoteTag;
 }
 
+const normalizeNote = (note: Partial<Note> & { _id?: string }): Note => {
+  const id = note.id ?? note._id;
+
+  if (!id) {
+    throw new Error("Note id is missing");
+  }
+
+  return {
+    ...note,
+    id,
+    createdAt: note.createdAt ?? "",
+    updatedAt: note.updatedAt ?? "",
+  } as Note;
+};
+
 interface RegisterResponse {
   message: string;
 }
@@ -63,22 +78,32 @@ export const fetchNotes = async (
   params: FetchNotesParams
 ): Promise<FetchNotesResponse> => {
   const { data } = await clientApi.get("/notes", { params });
-  return data;
+
+  return {
+    ...data,
+    notes: Array.isArray(data?.notes)
+      ? data.notes.map((note: Partial<Note> & { _id?: string }) => normalizeNote(note))
+      : [],
+  };
 };
 
 export const fetchNoteById = async (id: string): Promise<Note> => {
   const { data } = await clientApi.get(`/notes/${id}`);
-  return data;
+  return normalizeNote(data);
 };
 
 export const createNote = async (data: CreateNoteParams): Promise<Note> => {
   const res = await clientApi.post("/notes", data);
-  return res.data;
+  return normalizeNote(res.data);
 };
 
 export const deleteNote = async (id: string): Promise<Note> => {
+  if (!id) {
+    throw new Error("Note id is missing");
+  }
+
   const res = await clientApi.delete(`/notes/${id}`);
-  return res.data;
+  return normalizeNote(res.data);
 };
 
 // -----------------------------

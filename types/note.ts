@@ -7,6 +7,7 @@ export type NoteTag =
 
 export interface Note {
   id: string;
+  _id?: string;
   title: string;
   content: string;
   tag: NoteTag;

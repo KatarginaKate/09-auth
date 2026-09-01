@@ -6,6 +6,7 @@ import Link from "next/link";
 
 import css from "./NoteList.module.css";
 import type { Note } from "../../types/note";
+import type { FetchNotesResponse } from "../../lib/api/clientApi";
 
 interface NoteListProps {
   notes: Note[];
@@ -15,20 +16,37 @@ function NoteList({ notes }: NoteListProps) {
   const queryClient = useQueryClient();
 
   const deleteMutation = useMutation({
-  mutationFn: deleteNote,
-  onSuccess: () => {
-    queryClient.invalidateQueries({ queryKey: ["notes"], exact: false });
-  },
-});
+    mutationFn: deleteNote,
+    onSuccess: (_, deletedId) => {
+      queryClient.setQueryData<FetchNotesResponse | undefined>(
+        ["notes"],
+        (current) => {
+          if (!current) return current;
+
+          return {
+            ...current,
+            notes: current.notes.filter((note) => note.id !== deletedId),
+          };
+        }
+      );
+
+      queryClient.removeQueries({ queryKey: ["note", deletedId], exact: true });
+      queryClient.invalidateQueries({ queryKey: ["notes"], exact: false });
+    },
+  });
 
   const handleDelete = (id: string) => {
+    if (!id) {
+      return;
+    }
+
     deleteMutation.mutate(id);
   };
 
   return (
     <ul className={css.list}>
-      {notes.map((note) => (
-        <li key={note.id} className={css.listItem}>
+      {notes.map((note, index) => (
+        <li key={String(note.id ?? `note-${index}`)} className={css.listItem}>
           <h2 className={css.title}>{note.title}</h2>
 
           <p className={css.content}>{note.content}</p>
