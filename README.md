@@ -9,6 +9,8 @@ A full-stack Notes application built with Next.js App Router featuring authentic
 - 📝 Create, Read, Update and Delete Notes
 - 🛡️ Protected Routes
 - 📱 Responsive Design
+- 🖼️ Profile Avatar Management
+- 🌙 Dark Theme Support
 - ⚡ Server-side API Routes
 - 🎯 TypeScript Support
 
